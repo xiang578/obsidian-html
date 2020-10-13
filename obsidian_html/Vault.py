@@ -18,18 +18,18 @@ class Vault:
 
     def _add_backlinks(self):
         for note in self.notes:
-            backlinks = find_backlinks(note["filename"], self.notes)
+            backlinks = note.find_backlinks(self.notes.remove(note))
             if backlinks:
-                note["content"] += "\n<div class=\"backlinks\" markdown=\"1\">\n## Backlinks\n\n"
+                note.content += "\n<div class=\"backlinks\" markdown=\"1\">\n## Backlinks\n\n"
                 for backlink in backlinks:
-                    note["content"] += f"- {md_link(backlink['text'], backlink['link'])}\n"
-                note["content"] += "</div>"
+                    note.content += f"- {backlink.md_link()}\n"
+                note.content += "</div>"
 
     def convert_to_html(self):
         notes_html = []
         for note in self.notes:
             filename_html = slug_case(note["filename"]) + ".html"
-            content_html = htmlify(note["content"])
+            content_html = htmlify(note.content)
 
             notes_html.append(
                 {"filename": filename_html, "content": content_html, "title": note["filename"]})
@@ -47,14 +47,11 @@ class Vault:
             if not os.path.exists(out_dir + "/" + folder):
                 os.makedirs(out_dir + "/" + folder)
 
-        notes_html = self.convert_to_html()
-
-        for note in notes_html:
+        for note in self.notes:
             if self.html_template:
-                html = self.html_template.format(
-                    title=note["title"], content=note["content"])
+                html = self.html_template.format(title=note.filename_no_ext, content=note.html())
             else:
-                html = note["content"]
+                html = note.html()
             with open(os.path.join(out_dir, note["filename"]), "w") as f:
                 f.write(html)
 

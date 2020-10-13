@@ -8,6 +8,7 @@ class Note:
         self.full_path = path
         self.filename = os.path.split(path)[-1]
         self.filename_no_ext = self.filename.replace(".md", "")
+        self.filename_html = self.filename_no_ext + ".html"
         self.is_extra_dir = is_extra_dir
         with open(path, encoding="utf8") as f:
             self.content = f.read()
