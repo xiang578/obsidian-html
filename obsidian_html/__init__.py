@@ -1,7 +1,7 @@
 import sys
 import argparse
 from .Vault import Vault
-from .Note import Note
+from .Note import Note, Link
 
 def main():
     parser = argparse.ArgumentParser(

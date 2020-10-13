@@ -1,6 +1,5 @@
 import os
 from obsidian_html.utils import slug_case, md_link
-from obsidian_html.format import htmlify
 from obsidian_html.Note import Note
 
 
@@ -17,24 +16,16 @@ class Vault:
                 self.html_template = f.read()
 
     def _add_backlinks(self):
-        for note in self.notes:
-            backlinks = note.find_backlinks(self.notes.remove(note))
+        for i, note in enumerate(self.notes):
+            # Make temporary list of all notes except current note in loop
+            others = self.notes; others.remove(note)
+            backlinks = self.notes[i].find_backlinks(others)
             if backlinks:
-                note.content += "\n<div class=\"backlinks\" markdown=\"1\">\n## Backlinks\n\n"
+                self.notes[i].content += "\n<div class=\"backlinks\" markdown=\"1\">\n## Backlinks\n\n"
                 for backlink in backlinks:
-                    note.content += f"- {backlink.md_link()}\n"
-                note.content += "</div>"
+                    self.notes[i].content += f"- {backlink.md_link()}\n"
+                self.notes[i].content += "</div>"
 
-    def convert_to_html(self):
-        notes_html = []
-        for note in self.notes:
-            filename_html = slug_case(note["filename"]) + ".html"
-            content_html = htmlify(note.content)
-
-            notes_html.append(
-                {"filename": filename_html, "content": content_html, "title": note["filename"]})
-
-        return notes_html
 
     def export_html(self, out_dir):
         # Default location of exported HTML is "html"
@@ -52,7 +43,7 @@ class Vault:
                 html = self.html_template.format(title=note.filename_no_ext, content=note.html())
             else:
                 html = note.html()
-            with open(os.path.join(out_dir, note["filename"]), "w") as f:
+            with open(os.path.join(out_dir, note.filename_html), "w") as f:
                 f.write(html)
 
 
