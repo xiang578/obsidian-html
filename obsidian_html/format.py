@@ -1,5 +1,4 @@
 import regex as re
-import markdown2
 from .utils import slug_case, md_link
 
 
@@ -49,7 +48,7 @@ def obsidian_to_commonmark_links(document, matches, no_groups=2):
     return document
 
 
-def htmlify(document):
+def htmlify(document, pandoc=False):
     # Formatting of Obsidian tags and links.
     document = format_tags(
         format_internal_header_links(
@@ -57,33 +56,40 @@ def htmlify(document):
                 format_internal_links(
                     document))))
 
-    # Escaped curly braces lose their escapes when formatted. I'm suspecting
-    # this is from markdown2, as I haven't found anyplace which could
-    # do this among my own formatter functions. Therefore I double escape them.
-    document = document.replace(r"\{", r"\\{").replace(r"\}", r"\\}")
+    if pandoc:
+        import pypandoc
+        filters = ['pandoc-xnos']
+        args = []
+        html = pypandoc.convert_text(document, 'html', format='md', filters=filters, extra_args=args)
+    else:
+        import markdown2
+        # Escaped curly braces lose their escapes when formatted. I'm suspecting
+        # this is from markdown2, as I haven't found anyplace which could
+        # do this among my own formatter functions. Therefore I double escape them.
+        document = document.replace(r"\{", r"\\{").replace(r"\}", r"\\}")
 
-    markdown2_extras = [
-        # Parser should work withouth strict linebreaks.
-        "break-on-newline",
-        # Support of ```-codeblocks and syntax highlighting.
-        "fenced-code-blocks",
-        # Make slug IDs for each header. Needed for internal header links.
-        "header-ids",
-        # Support for strikethrough formatting.
-        "strike",
-        # GFM tables.
-        "tables",
-        # Support for lists that start without a newline directly above.
-        "cuddled-lists",
-        # Have to support Markdown inside html tags
-        "markdown-in-html",
-        # Disable formatting via the _ character. Necessary for code an TeX
-        "code-friendly",
-        # Support for Obsidian's footnote syntax
-        "footnotes"
-    ]
+        markdown2_extras = [
+            # Parser should work withouth strict linebreaks.
+            "break-on-newline",
+            # Support of ```-codeblocks and syntax highlighting.
+            "fenced-code-blocks",
+            # Make slug IDs for each header. Needed for internal header links.
+            "header-ids",
+            # Support for strikethrough formatting.
+            "strike",
+            # GFM tables.
+            "tables",
+            # Support for lists that start without a newline directly above.
+            "cuddled-lists",
+            # Have to support Markdown inside html tags
+            "markdown-in-html",
+            # Disable formatting via the _ character. Necessary for code an TeX
+            "code-friendly",
+            # Support for Obsidian's footnote syntax
+            "footnotes"
+        ]
 
-    html = markdown2.markdown(document, extras=markdown2_extras)
+        html = markdown2.markdown(document, extras=markdown2_extras)
 
     # Wrapping converted markdown in a div for styling
     html = f"<div id=\"content\">{html}</div>"
