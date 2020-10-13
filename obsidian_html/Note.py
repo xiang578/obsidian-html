@@ -25,12 +25,11 @@ class Note:
     def find_backlinks(self, others):
         backlinks = []
         for other in others:
-            links = other.links_in_file()
-            if target_note_name in links:
-                backlinks.append({"text": note["filename"].replace(".md", ""),
-                                  "link": slug_case(note["filename"].replace(".md", ""))})
+            link_targets = [link.target for link in other.links_in_file()]
+            if self.filename_no_ext in link_targets:
+                backlinks.append(Link(other.filename_no_ext))
 
-        backlinks = sorted(backlinks, key=lambda x: x['text'])
+        backlinks = sorted(backlinks, key=lambda x: x.target)
 
         return backlinks
             
