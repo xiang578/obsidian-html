@@ -35,8 +35,8 @@ class Vault:
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
         for folder in self.extra_folders:
-            if not os.path.exists(out_dir + "/" + folder):
-                os.makedirs(out_dir + "/" + folder)
+            if not os.path.exists(os.path.join(out_dir, folder)):
+                os.makedirs(os.path.join(out_dir, folder))
 
         for note in self.notes:
             if self.html_template:
