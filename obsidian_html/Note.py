@@ -8,10 +8,10 @@ class Note:
     def __init__(self, path, is_extra_dir = False):
         self.path = path
         self.filename = os.path.split(path)[-1]
-        self.filename_no_ext = self.filename.replace(".md", "")
-        self.filename_html = slug_case(self.filename_no_ext) + ".html"
+        self.title = self.filename.replace(".md", "")
+        self.filename_html = slug_case(self.title) + ".html"
         self.is_extra_dir = is_extra_dir
-        self.link = Link(self.filename_no_ext)
+        self.link = Link(self.title)
 
         with open(path, encoding="utf8") as f:
             self.content = f.read()
@@ -56,6 +56,8 @@ class Note:
 
     
     def html(self, pandoc=False):
+        """Returns the note formatted as HTML. Will use markdown2 as default, with the option of pandoc (WIP)"""
+        document = self.content
         if pandoc:
             # Still WIP
             import pypandoc
