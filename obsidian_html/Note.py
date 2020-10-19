@@ -12,8 +12,10 @@ class Note:
         self.filename_html = slug_case(self.filename_no_ext) + ".html"
         self.is_extra_dir = is_extra_dir
         self.link = Link(self.filename_no_ext)
+
         with open(path, encoding="utf8") as f:
             self.content = f.read()
+        self.convert_obsidian_syntax()
             
         self.links = self.links_in_file()
             
@@ -41,15 +43,19 @@ class Note:
 
         return backlinks
     
-    def html(self, pandoc=False):
-        # Formatting of Obsidian tags and links.
-        # (I know, very Lisp-esque, but Python doesn't always need to be imperative :wink:)
-        document = format_tags(
+    def convert_obsidian_syntax(self):
+        """Converts Obsidian syntax into pure Markdown.
+        Actually, that's a lie, features that aren't supported by John Gruber's Markdown is mostly
+        converted into Pandoc's Markdown Flavour."""        
+        # (I know, very Lisp-esque, but I didn't feel like doing imperative today :wink:)
+        self.content =  format_tags(
             format_internal_header_links(
                 format_internal_aliased_links(
                     format_internal_links(
                         self.content))))
 
+    
+    def html(self, pandoc=False):
         if pandoc:
             # Still WIP
             import pypandoc
@@ -76,9 +82,9 @@ class Note:
                 "tables",
                 # Support for lists that start without a newline directly above.
                 "cuddled-lists",
-                # Have to support Markdown inside html tags
+                # Support Markdown inside html tags
                 "markdown-in-html",
-                # Disable formatting via the _ character. Necessary for code an TeX
+                # Disable formatting via the _ character. Necessary for code and TeX
                 "code-friendly",
                 # Support for Obsidian's footnote syntax
                 "footnotes"
