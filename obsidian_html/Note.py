@@ -15,7 +15,10 @@ class Note:
         with open(path, encoding="utf8") as f:
             self.content = f.read()
             
+        self.links = self.links_in_file()
+            
     def links_in_file(self):
+        """Returns a list of all links in the note."""
         matches = re.finditer(r"\[{2}([^\]]*?)[|#\]]([^\]]*?)\]+", self.content)
 
         links = []
@@ -26,13 +29,13 @@ class Note:
         return links
     
     def find_backlinks(self, others):
+        """Returns a list of Link objects linking to all the notes in 'others' that reference self"""
         backlinks = []
         for other in others:
             if self == other:
                 continue
-            links = other.links_in_file()
-            if self.link in links:
-                backlinks.append(Link(other.filename_no_ext))
+            if self.link in other.links:
+                backlinks.append(other.link)
 
         backlinks = sorted(backlinks, key=lambda x: x.target)
 
@@ -99,6 +102,7 @@ class Link:
         self.slug = slug_case(target)
         
     def md_link(self):
+        """Returns a link string that follows the Markdown specification"""
         if self.alias:
             return md_link(self.alias, self.slug)
         else:
