@@ -132,6 +132,7 @@ Make a GitHub Actions workflow using the YAML below, and your vault will be publ
 - [ ] Support local attachments
 - [ ] Support the `![[]]` embedding syntax (perhaps using iframe or some similar method)
 - [ ] Support extra features added by the user through YAML metadata
+- [ ] Support extra features added by the user through YAML metadata
 - [x] Investigate emoji support
 - [x] Ignore directories ending with '.md'
 ## Known issues
