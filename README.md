@@ -131,11 +131,9 @@ Make a GitHub Actions workflow using the YAML below, and your vault will be publ
 
 - [ ] Support local attachments
 - [ ] Support the `![[]]` embedding syntax (perhaps using iframe or some similar method)
-- [ ] Revamped support for header links and support block references
 - [ ] Support extra features added by the user through YAML metadata
-- [ ] Revamped support for header links and support block references
-- [x] Investigate emoji support
-- [x] Ignore directories ending with '.md'
+- [x] Revamped support for header links and support block references
+
 ## Known issues
 
 - Links in headers lead to weird header ids, and thus malfunctioning header links from other pages.
