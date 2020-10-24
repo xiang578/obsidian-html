@@ -1,7 +1,7 @@
 import os
 import regex as re
 from obsidian_html.utils import slug_case, md_link
-from obsidian_html.format import *
+from obsidian_html.format import format_tags, format_blockrefs
 from obsidian_html.Link import Link
 
 
@@ -16,9 +16,10 @@ class Note:
 
         with open(path, encoding="utf8") as f:
             self.content = f.read()
-        self.convert_obsidian_syntax()
-            
+
         self.links = self.links_in_file()
+
+        self.convert_obsidian_syntax()
             
     def links_in_file(self):
         """Returns a list of all links in the note."""
@@ -40,7 +41,7 @@ class Note:
             if self.link in other.links:
                 backlinks.append(other.link)
 
-        backlinks = sorted(backlinks, key=lambda x: x.target)
+        backlinks = sorted(backlinks, key=lambda link: link.file)
 
         return backlinks
     
@@ -51,7 +52,7 @@ class Note:
         for link in self.links:
             self.content = self.content.replace(f"[[{link.obsidian_link}]]", link.md_link())
             
-        self.content =  format_tags(self.content)
+        self.content =  format_blockrefs(format_tags(self.content))
 
     
     def html(self, pandoc=False):

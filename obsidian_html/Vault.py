@@ -18,7 +18,7 @@ class Vault:
     def _add_backlinks(self):
         for i, note in enumerate(self.notes):
             # Make temporary list of all notes except current note in loop
-            others = self.notes; others.remove(note)
+            others = [other for other in self.notes if other != note]
             backlinks = self.notes[i].find_backlinks(others)
             if backlinks:
                 self.notes[i].content += "\n<div class=\"backlinks\" markdown=\"1\">\n## Backlinks\n\n"

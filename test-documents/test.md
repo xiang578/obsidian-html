@@ -1,1 +1,0 @@
-[[Link to something#It's a header]]. Here is also a [[Link to something#^block42]]. 
