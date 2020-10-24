@@ -2,6 +2,7 @@ import os
 import regex as re
 from obsidian_html.utils import slug_case, md_link
 from obsidian_html.format import *
+from obsidian_html.Link import Link
 
 
 class Note:
@@ -102,19 +103,3 @@ class Note:
     def __eq__(self, other):
         return self.path == other.path
             
-
-class Link:
-    def __init__(self, target, alias=None):
-        self.target = target
-        self.alias = alias
-        self.slug = slug_case(target)
-        
-    def md_link(self):
-        """Returns a link string that follows the Markdown specification"""
-        if self.alias:
-            return md_link(self.alias, self.slug)
-        else:
-            return md_link(self.target, self.slug)
-        
-    def __eq__(self, other):
-        return self.target == other.target
