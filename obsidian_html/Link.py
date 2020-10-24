@@ -7,14 +7,6 @@ LINK_SYNTAX = {
     "#^": "blockref"
 }
 
-def format_links(text):
-    matches = re.finditer(r"\[{2}(.*?)\]{2}", text)
-    for match in matches:
-        link = Link(match.group(1))
-        text = text.replace(f"[[{link.obsidian_link}]]", link.md_link())
-        
-    return text
-
 class Link:
     def __init__(self, obsidian_link):
         self.obsidian_link = obsidian_link

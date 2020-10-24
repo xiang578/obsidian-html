@@ -22,11 +22,11 @@ class Note:
             
     def links_in_file(self):
         """Returns a list of all links in the note."""
-        matches = re.finditer(r"\[{2}([^\]]*?)[|#\]]([^\]]*?)\]+", self.content)
+        matches = re.finditer(r"\[{2}(.*?)\]{2}", self.content)
 
         links = []
         for match in matches:
-            link = Link(match.group(1), alias=match.group(2))
+            link = Link(match.group(1))
             links.append(link)
 
         return links
@@ -47,13 +47,11 @@ class Note:
     def convert_obsidian_syntax(self):
         """Converts Obsidian syntax into pure Markdown.
         Actually, that's a lie, features that aren't supported by John Gruber's Markdown is mostly
-        converted into Pandoc's Markdown Flavour."""        
-        # (I know, very Lisp-esque, but I didn't feel like doing imperative today :wink:)
-        self.content =  format_tags(
-            format_internal_header_links(
-                format_internal_aliased_links(
-                    format_internal_links(
-                        self.content))))
+        converted into Pandoc's Markdown Flavour."""
+        for link in self.links:
+            self.content = self.content.replace(f"[[{link.obsidian_link}]]", link.md_link())
+            
+        self.content =  format_tags(self.content)
 
     
     def html(self, pandoc=False):
