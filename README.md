@@ -133,8 +133,10 @@ Make a GitHub Actions workflow using the YAML below, and your vault will be publ
 - [ ] Support the `![[]]` embedding syntax (perhaps using iframe or some similar method)
 - [ ] Revamped support for header links and support block references
 - [ ] Support extra features added by the user through YAML metadata
+- [ ] Revamped support for header links and support block references
 - [x] Investigate emoji support
 - [x] Ignore directories ending with '.md'
 ## Known issues
 
 - Links in headers lead to weird header ids, and thus malfunctioning header links from other pages.
+- There might be issues related to emoji in filenames/directory names. This seems to be an issue with how `setuptools` handles command line arguments. Refer to [this comment](https://github.com/kmaasrud/obsidian-html/issues/3#issuecomment-705512714) for a workaround.
