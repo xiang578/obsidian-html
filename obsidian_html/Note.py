@@ -89,7 +89,9 @@ class Note:
                 # Disable formatting via the _ character. Necessary for code and TeX
                 "code-friendly",
                 # Support for Obsidian's footnote syntax
-                "footnotes"
+                "footnotes",
+                # Enable task list checkboxes - [ ]
+                "task_list"
             ]
 
             html = markdown2.markdown(document, extras=markdown2_extras)
