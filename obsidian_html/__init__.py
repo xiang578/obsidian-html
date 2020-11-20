@@ -27,7 +27,12 @@ def main():
                         default=[],
                         help="Extra sub-directories in vault that you want included")
 
+    parser.add_argument("-f", "--filter",
+                        nargs="+",
+                        default=[],
+                        help="Filter notes by tags")
+
     args = parser.parse_args()
 
-    vault = Vault(args.Vault, extra_folders=args.dirs, html_template=args.template)
+    vault = Vault(args.Vault, extra_folders=args.dirs, html_template=args.template, filter=args.filter)
     vault.export_html(args.output_dir)

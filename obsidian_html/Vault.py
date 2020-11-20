@@ -1,12 +1,14 @@
 import os
+import regex as re
 from obsidian_html.utils import slug_case, md_link, render_markdown
 from obsidian_html.Note import Note
 
 
 class Vault:
-    def __init__(self, vault_root, extra_folders=[], html_template=None):
+    def __init__(self, vault_root, extra_folders=[], html_template=None, filter=[]):
         self.vault_root = vault_root
-        self.notes = find_files(vault_root, extra_folders)
+        self.filter = filter
+        self.notes = find_files(self, vault_root, extra_folders)
         self.extra_folders = extra_folders
         self._add_backlinks()
 
@@ -48,22 +50,34 @@ class Vault:
                 f.write(html)
 
 
-def find_files(vault_root, extra_folders):
+def find_files(self, vault_root, extra_folders):
     # Find all markdown-files in vault root.
-    md_files = find_md_files(vault_root)
+    md_files = find_md_files(self, vault_root)
 
     # Find all markdown-files in each extra folder.
     for folder in extra_folders:
-        md_files += find_md_files(os.path.join(vault_root, folder), is_extra_dir=True)
+        md_files += find_md_files(self, os.path.join(vault_root, folder), is_extra_dir=True)
 
     return md_files
 
 
-def find_md_files(root, is_extra_dir=False):
+def find_md_files(self, root, is_extra_dir=False):
     md_files = []
     for md_file in os.listdir(root):
         # Check if the element in 'root' has the extension .md and is indeeed a file
         if not (md_file.endswith(".md") and os.path.isfile(os.path.join(root, md_file))):
+            continue
+        
+        with open(os.path.join(root, md_file), encoding="utf8") as f:
+            document = f.read()
+        
+        include = False
+
+        for f in self.filter:
+            if document.find("#"+f) > -1:
+                include = True
+        
+        if not include:
             continue
         
         md_files.append(Note(os.path.join(root, md_file), is_extra_dir=is_extra_dir))
