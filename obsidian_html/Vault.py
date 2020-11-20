@@ -1,5 +1,5 @@
 import os
-from obsidian_html.utils import slug_case, md_link
+from obsidian_html.utils import slug_case, md_link, render_markdown
 from obsidian_html.Note import Note
 
 
@@ -21,11 +21,12 @@ class Vault:
             others = [other for other in self.notes if other != note]
             backlinks = self.notes[i].find_backlinks(others)
             if backlinks:
-                self.notes[i].content += "\n<div class=\"backlinks\" markdown=\"1\">\n## Backlinks\n\n"
+                self.notes[i].backlinks += "\n<div class=\"backlinks\" markdown=\"1\">\n"
                 for backlink in backlinks:
-                    self.notes[i].content += f"- {backlink.md_link()}\n"
-                self.notes[i].content += "</div>"
+                    self.notes[i].backlinks += f"- {backlink.md_link()}\n"
+                self.notes[i].backlinks += "</div>"
 
+                self.notes[i].backlinks = render_markdown(self.notes[i].backlinks)
 
     def export_html(self, out_dir):
         # Default location of exported HTML is "html"
@@ -40,7 +41,7 @@ class Vault:
 
         for note in self.notes:
             if self.html_template:
-                html = self.html_template.format(title=note.title, content=note.html())
+                html = self.html_template.format(title=note.title, content=note.html(), backlinks=note.backlinks)
             else:
                 html = note.html()
             with open(os.path.join(out_dir, note.filename_html), "w", encoding="utf8") as f:
