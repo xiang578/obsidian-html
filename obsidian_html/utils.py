@@ -60,7 +60,9 @@ def render_markdown(text):
         # Disable formatting via the _ character. Necessary for code and TeX
         "code-friendly",
         # Support for Obsidian's footnote syntax
-        "footnotes"
+        "footnotes",
+        # Enable task list checkboxes - [ ]
+        "task_list"
     ]
 
     return markdown2.markdown(text, extras=markdown2_extras)
