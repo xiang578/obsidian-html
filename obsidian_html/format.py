@@ -4,7 +4,7 @@ from obsidian_html.utils import slug_case, md_link
 
 def format_tags(document):
     """Obsidian style tags. Removes #-icon and adds a span tag."""
-    matches = re.finditer(r"\s#([\p{L}_]+)", document)
+    matches = re.finditer(r"\s#([\p{L}_-]+)", document)
 
     for match in matches:
         document = document.replace(

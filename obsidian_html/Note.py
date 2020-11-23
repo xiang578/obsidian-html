@@ -1,6 +1,6 @@
 import os
 import regex as re
-from obsidian_html.utils import slug_case, md_link
+from obsidian_html.utils import slug_case, md_link, render_markdown
 from obsidian_html.format import format_tags, format_blockrefs
 from obsidian_html.Link import Link
 
@@ -16,6 +16,8 @@ class Note:
 
         with open(path, encoding="utf8") as f:
             self.content = f.read()
+
+        self.backlinks = ""
 
         self.links = self.links_in_file()
 
@@ -53,7 +55,6 @@ class Note:
             self.content = self.content.replace(f"[[{link.obsidian_link}]]", link.md_link())
             
         self.content =  format_blockrefs(format_tags(self.content))
-
     
     def html(self, pandoc=False):
         """Returns the note formatted as HTML. Will use markdown2 as default, with the option of pandoc (WIP)"""
@@ -65,36 +66,7 @@ class Note:
             args = []
             html = pypandoc.convert_text(document, 'html', format='md', filters=filters, extra_args=args)
         else:
-            import markdown2
-            # Escaped curly braces lose their escapes when formatted. I'm suspecting
-            # this is from markdown2, as I haven't found anyplace which could
-            # do this among my own formatter functions. Therefore I double escape them.
-            document = document.replace(r"\{", r"\\{").replace(r"\}", r"\\}")
-
-            markdown2_extras = [
-                # Parser should work withouth strict linebreaks.
-                "break-on-newline",
-                # Support of ```-codeblocks and syntax highlighting.
-                "fenced-code-blocks",
-                # Make slug IDs for each header. Needed for internal header links.
-                "header-ids",
-                # Support for strikethrough formatting.
-                "strike",
-                # GFM tables.
-                "tables",
-                # Support for lists that start without a newline directly above.
-                "cuddled-lists",
-                # Support Markdown inside html tags
-                "markdown-in-html",
-                # Disable formatting via the _ character. Necessary for code and TeX
-                "code-friendly",
-                # Support for Obsidian's footnote syntax
-                "footnotes",
-                # Enable task list checkboxes - [ ]
-                "task_list"
-            ]
-
-            html = markdown2.markdown(document, extras=markdown2_extras)
+            html = render_markdown(document)
 
         # Wrapping converted markdown in a div for styling
         html = f"<div id=\"content\">{html}</div>"
