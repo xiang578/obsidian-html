@@ -8,7 +8,7 @@ class Vault:
     def __init__(self, vault_root, extra_folders=[], html_template=None, filter=[]):
         self.vault_root = vault_root
         self.filter = filter
-        self.notes = find_files(self, vault_root, extra_folders)
+        self.notes = self._find_files(vault_root, extra_folders)
         self.extra_folders = extra_folders
         self._add_backlinks()
 
@@ -31,9 +31,6 @@ class Vault:
                 self.notes[i].backlinks = render_markdown(self.notes[i].backlinks)
 
     def export_html(self, out_dir):
-        # Default location of exported HTML is "html"
-        if not out_dir:
-            out_dir = os.path.join(self.vault_root, "html")
         # Ensure out_dir exists, as well as its sub-folders.
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
@@ -50,36 +47,33 @@ class Vault:
                 f.write(html)
 
 
-def find_files(self, vault_root, extra_folders):
-    # Find all markdown-files in vault root.
-    md_files = find_md_files(self, vault_root)
+    def _find_files(self, vault_root, extra_folders):
+        # Find all markdown-files in vault root.
+        md_files = self._find_md_files(vault_root)
 
-    # Find all markdown-files in each extra folder.
-    for folder in extra_folders:
-        md_files += find_md_files(self, os.path.join(vault_root, folder), is_extra_dir=True)
+        # Find all markdown-files in each extra folder.
+        for folder in extra_folders:
+            md_files += self._find_md_files(os.path.join(vault_root, folder), is_extra_dir=True)
 
-    return md_files
+        return md_files
 
 
-def find_md_files(self, root, is_extra_dir=False):
-    md_files = []
-    for md_file in os.listdir(root):
-        # Check if the element in 'root' has the extension .md and is indeeed a file
-        if not (md_file.endswith(".md") and os.path.isfile(os.path.join(root, md_file))):
-            continue
-        
-        with open(os.path.join(root, md_file), encoding="utf8") as f:
-            document = f.read()
-        
-        include = False
+    def _find_md_files(self, root, is_extra_dir=False):
+        md_files = []
+        for md_file in os.listdir(root):
+            # Check if the element in 'root' has the extension .md and is indeeed a file
+            if not (md_file.endswith(".md") and os.path.isfile(os.path.join(root, md_file))):
+                continue
+            
+            note = Note(os.path.join(root, md_file), is_extra_dir=is_extra_dir)
+            
+            # Filter tags
+            if self.filter:
+                for tag in self.filter:
+                    if tag in note.tags:
+                        md_files.append(note)
+                        break
+            else:
+                md_files.append(note)
 
-        for f in self.filter:
-            if document.find("#"+f) > -1:
-                include = True
-        
-        if not include:
-            continue
-        
-        md_files.append(Note(os.path.join(root, md_file), is_extra_dir=is_extra_dir))
-
-    return md_files
+        return md_files
