@@ -1,6 +1,7 @@
 import regex as re
 import os
 import markdown2
+from obsidian_html import GLOBAL
 
 
 def slug_case(text):
@@ -10,7 +11,7 @@ def slug_case(text):
 
 
 def md_link(text, link):
-    return "[" + text + "](" + link + ")"
+    return "[" + text + "](" + link + (".html" if GLOBAL.HTML_LINK_EXTENSIONS else "") + ")"
 
 
 def extract_links_from_file(document):
@@ -35,6 +36,13 @@ def find_backlinks(target_note_name, all_notes):
     backlinks = sorted(backlinks, key=lambda x: x['text'])
 
     return backlinks
+
+def find_tags(document):
+    tags = [match.group(1) for match in re.finditer(r"\s#([\p{L}_-]+)", document)]
+    # Sort by length (longest first) to fix issues pertaining to tags beginning with the same word.
+    tags.sort(key=lambda x: len(x), reverse=True)
+    
+    return tags
 
 def render_markdown(text):
     # Escaped curly braces lose their escapes when formatted. I'm suspecting

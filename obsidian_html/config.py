@@ -1,0 +1,2 @@
+class GLOBAL:
+    HTML_LINK_EXTENSIONS = False
