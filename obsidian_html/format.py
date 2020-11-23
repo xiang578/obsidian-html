@@ -4,11 +4,13 @@ from obsidian_html.utils import slug_case, md_link
 
 def format_tags(document):
     """Obsidian style tags. Removes #-icon and adds a span tag."""
-    matches = re.finditer(r"\s#([\p{L}_-]+)", document)
+    matches = list(re.finditer(r"\s#([\p{L}_-]+)", document))
+    # Sort by length (longest first) to fix issues pertaining to tags beginning with the same word.
+    matches.sort(key=lambda x: len(x.group()), reverse=True)
 
     for match in matches:
         document = document.replace(
-            match.group(), "<span class=\"tag\">" + match.group(1) + "</span>")
+            "#" + match.group(), "<span class=\"tag\">" + match.group(1) + "</span>")
 
     return document
 
