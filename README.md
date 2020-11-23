@@ -30,6 +30,12 @@ The output is not very exiting from the get-go. It needs some style and structur
 
 Here you can add metadata, link to CSS-files and add unified headers/footers to all the pages. [Here's](https://github.com/kmaasrud/brain/blob/master/template.html) an example of how I use the template function on my own hosted vault.
 
+### Local browsing
+
+Most web-servers do not need the `.html` file extension in URLs to find the correct file. However, that might be needed when browsing the converted vault locally. If you experience issues with this or want all links to have a `.html` extension, just add this option:
+
+    obsidian-html <vault> -e
+
 ### TeX support via KaTeX
 
 By loading KaTeX in the HTML template and initializing it with `$` and `$$` as delimiters, you will have TeX support on the exported documents.
@@ -132,6 +138,7 @@ Make a GitHub Actions workflow using the YAML below, and your vault will be publ
 - [ ] Support local attachments
 - [ ] Support the `![[]]` embedding syntax (perhaps using iframe or some similar method)
 - [ ] Support extra features added by the user through YAML metadata
+- [ ] Support for the `==text==` highlighting syntax.
 - [x] Revamped support for header links and support block references
 
 ## Known issues
