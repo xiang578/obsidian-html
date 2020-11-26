@@ -144,9 +144,8 @@ Make a GitHub Actions workflow using the YAML below, and your vault will be publ
 
 - [ ] Support local attachments
 - [ ] Support the `![[]]` embedding syntax (perhaps using iframe or some similar method)
-- [ ] Support extra features added by the user through YAML metadata
+- [ ] Option to generate JSON-file that can be used by a search engine of choice.
 - [x] Support for the `==text==` highlighting syntax.
-- [x] Revamped support for header links and support block references
 
 ## Known issues
 
