@@ -29,3 +29,9 @@ def format_highlights(document):
         document = document.replace(match.group(), f"<mark class=\"highlight\">{match.group(1)}</mark>)")
         
     return document
+    
+def format_links(document, links):
+    for link in links:
+        document = document.replace(f"[[{link.obsidian_link}]]", link.md_link())
+        
+    return document
