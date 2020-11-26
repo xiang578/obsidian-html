@@ -16,6 +16,16 @@ def format_blockrefs(document):
     matches = regex.finditer(document)
 
     for match in matches:
-        document = document.replace(match.group(), f"<spand id=\"{match.group(1)}\"></span>")
+        document = document.replace(match.group(), f"<span id=\"{match.group(1)}\"></span>")
+        
+    return document
+
+def format_highlights(document):
+    """Formats the '==highlight==' directly into HTML."""
+    regex = re.compile(r"==(.*?)==")
+    matches = regex.finditer(document)
+
+    for match in matches:
+        document = document.replace(match.group(), f"<mark class=\"highlight\">{match.group(1)}</mark>)")
         
     return document

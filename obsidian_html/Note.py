@@ -1,7 +1,7 @@
 import os
 import regex as re
 from obsidian_html.utils import slug_case, md_link, render_markdown, find_tags
-from obsidian_html.format import format_tags, format_blockrefs
+from obsidian_html.format import format_tags, format_blockrefs, format_highlights
 from obsidian_html.Link import Link
 
 
@@ -50,12 +50,12 @@ class Note:
     
     def convert_obsidian_syntax(self):
         """Converts Obsidian syntax into pure Markdown.
-        Actually, that's a lie, features that aren't supported by John Gruber's Markdown is mostly
+        Actually, that's a lie, features that aren't supported by John Gruber's Markdown are some times
         converted into Pandoc's Markdown Flavour."""
         for link in self.links:
             self.content = self.content.replace(f"[[{link.obsidian_link}]]", link.md_link())
             
-        self.content =  format_blockrefs(format_tags(self.content, self.tags))
+        self.content = format_highlights(format_blockrefs(format_tags(self.content, self.tags)))
     
     def html(self, pandoc=False):
         """Returns the note formatted as HTML. Will use markdown2 as default, with the option of pandoc (WIP)"""
