@@ -40,9 +40,9 @@ Most web-servers do not need the `.html` file extension in URLs to find the corr
 
 By loading KaTeX in the HTML template and initializing it with `$` and `$$` as delimiters, you will have TeX support on the exported documents.
 
-<details>
-<summary>Add this to the bottom of you template's body</summary>
-<code>
+Just add this to the bottom of you template's body:
+
+```html
 <!-- KaTeX -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"
   integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
@@ -70,24 +70,31 @@ By loading KaTeX in the HTML template and initializing it with `$` and `$$` as d
   }});
   }});
 </script>
-</code>
-</details>
+```
+
+> Note the double `{`'s. This is to work around how Python formatting works, and will be correct in the outputted HTML.
 
 ### Syntax highlighting of code blocks
 
 Using [highlight.js](https://highlightjs.org/), syntax highlighting is easily achieved.
 
+Just add this to the bottom of you template's body:
 
-<details>
-<summary>Just add this to the bottom of you template's body</summary>
-<code>
+```html
 <!-- Syntax highlighting through highlight.js -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.1.2/styles/github-gist.css">
-<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.1.2/build/highlight.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@10.4.0/styles/default.min.css">
+<script src="https://unpkg.com/@highlightjs/cdn-assets@10.4.0/highlight.min.js"></script>
 
-<script>hljs.initHighlightingOnLoad();</script>
-</code>
-</details>
+<script>
+  // Ignore highlighting of mermaid
+  hljs.configure({{noHighlightRe: /^mermaid$/}});
+  hljs.initHighlightingOnLoad();
+</script>
+```
+
+> Note the double `{`'s. This is to work around how Python formatting works, and will be correct in the outputted HTML.
+
+---
 
 ## Deploying vault with GitHub Actions
 
