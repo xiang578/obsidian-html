@@ -53,8 +53,6 @@ def render_markdown(text):
     markdown2_extras = [
         # Parser should work withouth strict linebreaks.
         "break-on-newline",
-        # Support of ```-codeblocks and syntax highlighting.
-        "fenced-code-blocks",
         # Make slug IDs for each header. Needed for internal header links.
         "header-ids",
         # Support for strikethrough formatting.
