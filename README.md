@@ -24,11 +24,12 @@ The script will only convert the files located directly in the directory specifi
 
 ### Templates
 
-The output is not very exiting from the get-go. It needs some style and structure. This is done by using a HTML template. A template must have the formatters `{title}` and `{content}` present. Their value should be obvious. The template file is supplied to `obsidian-html` by the `-t` flag, like this:
+The output is not very exciting from the get-go. It needs some style and structure. This is done by using a HTML template. A template must have the formatters `{title}` and `{content}` present. Their value should be obvious. The template file is supplied to `obsidian-html` by the `-t` flag, like this:
 
     obsidian-html <vault> -t template.html
 
 Here you can add metadata, link to CSS-files and add unified headers/footers to all the pages. [Here's](https://github.com/kmaasrud/brain/blob/master/template.html) an example of how I use the template function on my own hosted vault.
+Note that links to CSS-files must be absolute, and that the html file cannot contain single curly braces other than the abovementioned formatters.
 
 ### Local browsing
 
