@@ -41,7 +41,7 @@ def find_tags(document):
     tags = [match.group(1) for match in re.finditer(r"\s#([\p{L}_-]+)", document)]
     # Sort by length (longest first) to fix issues pertaining to tags beginning with the same word.
     tags.sort(key=lambda x: len(x), reverse=True)
-    
+
     return tags
 
 def render_markdown(text):

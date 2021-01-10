@@ -25,7 +25,7 @@ class Note:
         self.tags = find_tags(self.content)
 
         self.convert_obsidian_syntax()
-            
+
     def links_in_file(self):
         """Returns a list of all links in the note."""
         matches = re.finditer(r"\[{2}(.*?)\]{2}", self.content)
@@ -36,7 +36,7 @@ class Note:
             links.append(link)
 
         return links
-    
+
     def find_backlinks(self, others):
         """Returns a list of Link objects linking to all the notes in 'others' that reference self"""
         backlinks = []
@@ -49,7 +49,7 @@ class Note:
         backlinks = sorted(backlinks, key=lambda link: link.file)
 
         return backlinks
-    
+
     def convert_obsidian_syntax(self):
         """Converts Obsidian syntax into pure Markdown.
         Actually, that's a lie, features that aren't supported by John Gruber's Markdown are some times
@@ -59,7 +59,7 @@ class Note:
         self.content = format_tags(self.content, self.tags)
         self.content = format_blockrefs(self.content)
         self.content = format_highlights(self.content)
-    
+
     def html(self, pandoc=False):
         """Returns the note formatted as HTML. Will use markdown2 as default, with the option of pandoc (WIP)"""
         document = self.content
@@ -73,10 +73,10 @@ class Note:
             html = render_markdown(document)
 
         # Wrapping converted markdown in a div for styling
-        html = f"<div id=\"content\">{html}</div>"
+        html = f"<div class=\"content\">{html}</div>"
 
         return html
-    
+
     def __eq__(self, other):
         return self.path == other.path
-            
+
