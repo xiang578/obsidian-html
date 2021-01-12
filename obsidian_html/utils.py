@@ -11,7 +11,7 @@ def slug_case(text):
 
 
 def md_link(text, link):
-    return "[" + text + "](" + link + (".html" if GLOBAL.HTML_LINK_EXTENSIONS else "") + ")"
+    return "[" + text + "](notes/" + link + (".html" if GLOBAL.HTML_LINK_EXTENSIONS else "") + ")"
 
 
 def extract_links_from_file(document):
