@@ -23,12 +23,12 @@ class Vault:
             others = [other for other in self.notes if other != note]
             backlinks = self.notes[i].find_backlinks(others)
             if backlinks:
-                self.notes[i].backlinks += "\n<div class=\"backlinks\" markdown=\"1\">\n"
+                self.notes[i].backlink_html += "\n<div class=\"backlinks\" markdown=\"1\">\n"
                 for backlink in backlinks:
-                    self.notes[i].backlinks += f"- {backlink.md_link()}\n"
-                self.notes[i].backlinks += "</div>"
+                    self.notes[i].backlink_html += f"- {backlink.md_link()}\n"
+                self.notes[i].backlink_html += "</div>"
 
-                self.notes[i].backlinks = render_markdown(self.notes[i].backlinks)
+                self.notes[i].backlink_html = render_markdown(self.notes[i].backlinks)
 
     def export_html(self, out_dir):
         # Ensure out_dir exists, as well as its sub-folders.
@@ -40,9 +40,11 @@ class Vault:
 
         for note in self.notes:
             if self.html_template:
-                html = self.html_template.format(title=note.title, content=note.html(), backlinks=note.backlinks)
+                # Use the supplied template
+                html = self.html_template.format(title=note.title, content=note.html(), backlinks=note.backlink_html)
             else:
-                html = note.html()
+                # Do not use a template, just output the content and a list of backlinks
+                html = "{content}\n{backlinks}".format(content=note.html(), backlinks=note.backlink_html)
             with open(os.path.join(out_dir, note.filename_html), "w", encoding="utf8") as f:
                 f.write(html)
 

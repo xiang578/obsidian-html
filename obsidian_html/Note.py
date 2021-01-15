@@ -19,7 +19,7 @@ class Note:
         with open(path, encoding="utf8") as f:
             self.content = f.read()
 
-        self.backlinks = ""
+        self.backlink_html = ""
 
         self.links = self.links_in_file()
         self.tags = find_tags(self.content)
@@ -41,8 +41,7 @@ class Note:
         """Returns a list of Link objects linking to all the notes in 'others' that reference self"""
         backlinks = []
         for other in others:
-            if self == other:
-                continue
+            if self == other: continue
             if self.link in other.links:
                 backlinks.append(other.link)
 
@@ -62,15 +61,14 @@ class Note:
     
     def html(self, pandoc=False):
         """Returns the note formatted as HTML. Will use markdown2 as default, with the option of pandoc (WIP)"""
-        document = self.content
         if pandoc:
             # Still WIP
             import pypandoc
             filters = ['pandoc-xnos']
             args = []
-            html = pypandoc.convert_text(document, 'html', format='md', filters=filters, extra_args=args)
+            html = pypandoc.convert_text(self.content, 'html', format='md', filters=filters, extra_args=args)
         else:
-            html = render_markdown(document)
+            html = render_markdown(self.content)
 
         # Wrapping converted markdown in a div for styling
         html = f"<div id=\"content\">{html}</div>"
