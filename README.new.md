@@ -10,6 +10,8 @@
   <a href="#tips">Tips</a> 
 </p>
 
+Oboe is a Python command line tool made to convert an [Obsidian](https://obsidian.md/) vault into a vault of HTML files, with the goal of publishing them as static files. It depends on the excellent [markdown2](https://github.com/trentm/python-markdown2) by [trentm](https://github.com/trentm) for Markdown parsing, but also deals with parsing Obsidian's flavor of Markdown. In addition, Oboe handles the structure of your vault and supports templates.
+
 # Installation
 
 1. Make sure Python and PIP are installed.
