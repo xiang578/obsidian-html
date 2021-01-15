@@ -1,6 +1,6 @@
 import os
 import regex as re
-from oboe.utils import slug_case, md_link, render_markdown
+from oboe.utils import slug_case, md_link, render_markdown, write
 from oboe.Note import Note
 
 
@@ -12,10 +12,11 @@ class Vault:
         self.extra_folders = extra_folders
         self._add_backlinks()
 
-        self.html_template = html_template
+        self.html_template_path = os.path.abspath(html_template)
         if html_template:
             with open(html_template, "r", encoding="utf8") as f:
                 self.html_template = f.read()
+
 
     def _add_backlinks(self):
         for i, note in enumerate(self.notes):
@@ -30,6 +31,7 @@ class Vault:
 
                 self.notes[i].backlink_html = render_markdown(self.notes[i].backlink_html)
 
+
     def export_html(self, out_dir):
         # Ensure out_dir exists, as well as its sub-folders.
         if not os.path.exists(out_dir):
@@ -37,16 +39,28 @@ class Vault:
         for folder in self.extra_folders:
             if not os.path.exists(os.path.join(out_dir, folder)):
                 os.makedirs(os.path.join(out_dir, folder))
-
-        for note in self.notes:
-            if self.html_template:
-                # Use the supplied template
+                
+        if self.html_template:
+            stylesheets = re.findall('<link+.*rel="stylesheet"+.*href="(.+?)"', self.html_template)
+            for stylesheet in stylesheets:
+                # Check if template contains reference to a stylesheet
+                stylesheet_abspath = os.path.join(os.path.dirname(self.html_template_path), stylesheet) 
+                # Check if the referenced stylesheet is local, and copy it to out_dir if it is
+                if os.path.isfile(stylesheet_abspath):
+                    print("Copying local styleshit to the output directory") # TODO: Message system
+                    with open(stylesheet_abspath, encoding="utf-8") as f:
+                        stylesheet_content = f.read()
+                    write(stylesheet_content, os.path.join(out_dir, stylesheet))
+                
+            # Use the supplied template on all notes
+            for note in self.notes:
                 html = self.html_template.format(title=note.title, content=note.html(), backlinks=note.backlink_html)
-            else:
-                # Do not use a template, just output the content and a list of backlinks
+                write(html, os.path.join(out_dir, note.filename_html))
+        else:
+            # Do not use a template, just output the content and a list of backlinks
+            for note in self.notes:
                 html = "{content}\n{backlinks}".format(content=note.html(), backlinks=note.backlink_html)
-            with open(os.path.join(out_dir, note.filename_html), "w", encoding="utf8") as f:
-                f.write(html)
+                write(html, os.path.join(out_dir, note.filename_html))
 
 
     def _find_files(self, vault_root, extra_folders):
