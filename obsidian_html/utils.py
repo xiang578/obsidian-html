@@ -5,9 +5,12 @@ from obsidian_html import GLOBAL
 
 
 def slug_case(text):
-    text = text.replace(".", "dot")
-    text = text.replace("_", "-")
-    return re.sub(r'[^\w\-/]+', '-', text).lower()
+    # Function from django/utils/text.py, should output the same as markdown2's variant
+    import unicodedata
+    text = str(text)
+    text = unicodedata.normalize('NFKC', text)
+    text = re.sub(r'[^\w\s-]', '', text.lower())
+    return re.sub(r'[-\s]+', '-', text).strip('-_')
 
 
 def md_link(text, link):
