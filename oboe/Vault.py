@@ -28,7 +28,7 @@ class Vault:
                     self.notes[i].backlink_html += f"- {backlink.md_link()}\n"
                 self.notes[i].backlink_html += "</div>"
 
-                self.notes[i].backlink_html = render_markdown(self.notes[i].backlinks)
+                self.notes[i].backlink_html = render_markdown(self.notes[i].backlink_html)
 
     def export_html(self, out_dir):
         # Ensure out_dir exists, as well as its sub-folders.
