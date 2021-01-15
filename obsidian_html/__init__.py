@@ -14,7 +14,7 @@ def main():
                         type=str,
                         help="Path to the vault root")
 
-    parser.add_argument("-o", "--output_dir",
+    parser.add_argument("-o", "--output_directory",
                         default="./html",
                         help="Path to place the generated HTML")
 
@@ -22,7 +22,7 @@ def main():
                         default=None,
                         help="Path to HTML template")
 
-    parser.add_argument("-d", "--dirs",
+    parser.add_argument("-d", "--sub-directories",
                         nargs="+",
                         default=[],
                         help="Extra sub-directories in vault that you want included")
@@ -32,7 +32,7 @@ def main():
                         default=[],
                         help="Filter notes by tags")
     
-    parser.add_argument("-e", "--extensions",
+    parser.add_argument("-e", "--add-file-extensions",
                         action="store_true",
                         help="Whether to include a '.html' extension on links. Useful for viewing locally.")
 
