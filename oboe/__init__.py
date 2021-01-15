@@ -38,6 +38,6 @@ def main():
 
     args = parser.parse_args()
 
-    GLOBAL.HTML_LINK_EXTENSIONS = args.extensions
-    vault = Vault(args.Vault, extra_folders=args.dirs, html_template=args.template, filter=args.filter)
-    vault.export_html(args.output_dir)
+    GLOBAL.HTML_LINK_EXTENSIONS = args.add_file_extensions
+    vault = Vault(args.Vault, extra_folders=args.sub_directories, html_template=args.template, filter=args.filter)
+    vault.export_html(args.output_directory)
