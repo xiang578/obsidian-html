@@ -1,10 +1,10 @@
 import os
 import regex as re
-from obsidian_html.utils import slug_case, md_link, render_markdown, find_tags
-from obsidian_html.format import (
+from oboe.utils import slug_case, md_link, render_markdown, find_tags
+from oboe.format import (
     format_tags, format_blockrefs, format_highlights, format_links, format_code_blocks
 )
-from obsidian_html.Link import Link
+from oboe.Link import Link
 
 
 class Note:

@@ -1,7 +1,7 @@
 import regex as re
 import os
 import markdown2
-from obsidian_html import GLOBAL
+from oboe import GLOBAL
 
 
 def slug_case(text):

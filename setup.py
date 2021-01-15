@@ -1,14 +1,14 @@
 from setuptools import setup
 
 setup(
-    name='obsidian-html',
-    version='0.1',
+    name='oboe',
+    version='0.2',
     description='Converts an Obsidian vault into HTML',
-    url='https://github.com/kmaasrud/obsidian-hugo',
+    url='https://github.com/kmaasrud/oboe',
     author='kmaasrud',
     author_email='kmaasrud@outlook.com',
     license='MIT',
-    packages=['obsidian_html'],
+    packages=['oboe'],
     install_requires=[
       'markdown2',
       'regex',
@@ -17,7 +17,7 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'obsidian-html=obsidian_html:main'
+            'oboe=oboe:main'
         ]
     }
 )

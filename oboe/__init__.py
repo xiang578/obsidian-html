@@ -6,7 +6,7 @@ from .Note import Note
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="obsidian-html",
+        prog="oboe",
         description="Converts an Obsidian vault into HTML")
 
     parser.add_argument("Vault",

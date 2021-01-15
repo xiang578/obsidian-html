@@ -1,7 +1,7 @@
 import os
 import regex as re
-from obsidian_html.utils import slug_case, md_link, render_markdown
-from obsidian_html.Note import Note
+from oboe.utils import slug_case, md_link, render_markdown
+from oboe.Note import Note
 
 
 class Vault:
