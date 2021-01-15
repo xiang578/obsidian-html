@@ -10,12 +10,12 @@
   <a href="#tips">Tips</a> 
 </p>
 
-## Installation
+# Installation
 
 1. Make sure Python and PIP are installed.
 2. Install Oboe with `pip install git+https://github.com/kmaasrud/oboe`
 
-## Usage
+# Usage
 
 Supply the path to an Obsidian vault, and Oboe will convert all its notes into HTML, appended by the notes' backlinks. 
 
@@ -25,13 +25,13 @@ These HTML-files are by default placed in the directory `./html`. To specify ano
 
     oboe <path to vault> -o <output directory>
     
-### Sub-directories
+## Sub-directories
 
 By default, Oboe only converts notes in the vault root, and not those inside sub-directories. To include sub-directories, add them with the flag `-d` or `--sub-directories`. For example, say you have the folders `Daily notes` and `Zettels` that you want to have converted. In this case, run
 
     oboe <path to vault> -d "Daily notes" "Zettels"
     
-### Templates
+## Templates
 
 The output is not very exciting from the get-go. It needs some style and structure. This is done by using a HTML template. A template must have the formatters `{title}` and `{content}` present. Their value should be obvious. The template file is supplied to `obsidian-html` by the flag `-t` or `--template`, like this:
 
@@ -41,14 +41,117 @@ Here you can add metadata, link to CSS-files and add unified headers/footers to 
 
 Note that because of the way Python does formatting, the template cannot contain single curly braces other than the abovementioned formatters. To include Javascript or CSS in your template, always use double curly braces (e.g. `{{`). These will be changed into single braces in the final result.
 
-### Filtering notes by tag
+## Filtering notes by tag
 
 Oboe supports only converting notes that contain a certain tag. The filter is specified via the `-f` or `--filter` flag. For example, say you had a tag `#physics` for notes relating to physics, and the same for `#chemistry`. To convert all notes relating to both physics and chemistry, run Oboe like this:
 
     oboe <path to vault> -f physics chemistry
 
-### Other flags
+## Other flags
 
 - `-e` or `--add-file-extensions`: Most web-servers do not need the `.html` file extension in URLs to find the correct file. However, that might be needed when browsing the converted vault locally. If you experience issues with this or want all links to have a `.html` extension, just add this flag when running.
 
-## Tips
+# Tips
+
+## Publishing your vault automatically to GitHub Pages
+
+Make a GitHub Actions workflow using the YAML below, and your vault will be published to GitHub Pages every time you push to the repository.
+
+1. Make sure you have GitHub Pages set up in the vault, and that it has `gh-pages` `/root` as its source.
+2. Copy and modify the following YAML job to match your repository. Add it to your vault repository as `.github/workflows/publish.yml`.
+
+    ```yaml
+    name: Publish to GitHub Pages
+
+    on:
+      push:
+        branches: [ master ]
+      
+    jobs:
+      deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v2
+
+        - name: Set up Python 3.8
+          uses: actions/setup-python@v2
+          with:
+            python-version: 3.8
+
+      - name: Install oboe
+        run: |
+          python -m pip install --upgrade pip
+          pip install git+https://github.com/kmaasrud/oboe.git
+          
+      - name: Generate HTML through oboe
+        run: oboe ./vault -o ./out -t ./template.html -d daily
+
+      - name: Publish
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: gh-pages
+          FOLDER: out
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    ```
+3. ????
+4. PROFIT!!!
+
+## Support for TeX via KaTeX
+
+By loading KaTeX in the HTML template and initializing it with `$` and `$$` as delimiters, you will have TeX support on the exported documents.
+
+Just add this to the bottom of you template's body:
+
+```html
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"
+  integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+<!-- The loading of KaTeX is deferred to speed up page rendering -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"
+  integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz"
+  crossorigin="anonymous"></script>
+
+<!-- To automatically render math in text elements, include the auto-render extension: -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"
+  integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI"
+  crossorigin="anonymous"></script>
+
+<!-- Parsing single dollar signs -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {{
+      renderMathInElement(document.body, {{
+        delimiters: [
+          {{left: "$$", right: "$$", display: true}},
+        {{left: "\\[", right: "\\]", display: true}},
+    {{left: "$", right: "$", display: false}},
+    {{left: "\\(", right: "\\)", display: false}}
+      ]
+  }});
+  }});
+</script>
+```
+
+> Note the double `{`'s. This is to work around how Python formatting works, and will be correct in the outputted HTML.
+
+## Syntax highlighting
+
+Using [highlight.js](https://highlightjs.org/), syntax highlighting is easily achieved.
+
+Just add this to the bottom of you template's body:
+
+```html
+<!-- Syntax highlighting through highlight.js -->
+<link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@10.4.0/styles/default.min.css">
+<script src="https://unpkg.com/@highlightjs/cdn-assets@10.4.0/highlight.min.js"></script>
+
+<script>
+  // Ignore highlighting of mermaid
+  hljs.configure({{noHighlightRe: /^mermaid$/}});
+  hljs.initHighlightingOnLoad();
+</script>
+```
+
+> Note the double `{`'s. This is to work around how Python formatting works, and will be correct in the outputted HTML.
