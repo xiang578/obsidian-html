@@ -1,5 +1,5 @@
 import regex as re
-from obsidian_html.utils import slug_case, md_link
+from oboe.utils import slug_case, md_link
 
 
 def format_tags(document, tags):

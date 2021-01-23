@@ -1,13 +1,16 @@
 import regex as re
 import os
 import markdown2
-from obsidian_html import GLOBAL
+from oboe import GLOBAL
 
 
 def slug_case(text):
-    text = text.replace(".", "dot")
-    text = text.replace("_", "-")
-    return re.sub(r'[^\w\-/]+', '-', text).lower()
+    # Function from django/utils/text.py, should output the same as markdown2's variant
+    import unicodedata
+    text = str(text)
+    text = unicodedata.normalize('NFKC', text)
+    text = re.sub(r'[^\w\s-]', '', text.lower())
+    return re.sub(r'[-\s]+', '-', text).strip('-_')
 
 
 def md_link(text, link):
@@ -37,12 +40,19 @@ def find_backlinks(target_note_name, all_notes):
 
     return backlinks
 
+
 def find_tags(document):
     tags = [match.group(1) for match in re.finditer(r"\s#([\p{L}_-]+)", document)]
     # Sort by length (longest first) to fix issues pertaining to tags beginning with the same word.
     tags.sort(key=lambda x: len(x), reverse=True)
 
     return tags
+
+
+def write(text, file):
+    with open(file, "w", encoding="utf8") as f:
+        f.write(text)
+
 
 def render_markdown(text):
     # Escaped curly braces lose their escapes when formatted. I'm suspecting
