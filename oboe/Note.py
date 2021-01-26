@@ -2,9 +2,11 @@ import os
 import regex as re
 from oboe.utils import slug_case, md_link, render_markdown, find_tags
 from oboe.format import (
-    format_tags, format_blockrefs, format_highlights, format_links, format_code_blocks
+    format_tags, format_blockrefs, format_highlights, format_embeds, format_links, format_code_blocks
 )
 from oboe.Link import Link
+from oboe.Embed import Embed
+from datetime import datetime
 
 
 class Note:
@@ -13,7 +15,9 @@ class Note:
         self.filename = os.path.split(path)[-1]
         self.title = self.filename.replace(".md", "")
         self.filename_html = slug_case(self.title) + ".html"
+        self.metadata_filename = slug_case(self.title) + ".json"
         self.is_extra_dir = is_extra_dir
+        self.extra_dir = os.path.split(os.path.dirname(path))[-1] if is_extra_dir else ""
         self.link = Link(self.title)
 
         with open(path, encoding="utf8") as f:
@@ -21,10 +25,30 @@ class Note:
 
         self.backlink_html = ""
 
+        self.embeds = self.embeds_in_file()
         self.links = self.links_in_file()
         self.tags = find_tags(self.content)
 
+        self.add_last_modified()
         self.convert_obsidian_syntax()
+
+    def add_last_modified(self):
+        """Append last modified timestamp"""
+        last_modified = os.stat(self.path).st_mtime
+        format = "%m/%d/%Y %H:%M"
+        self.content += """\n\n<span class="timestamp">Last update: %s</span>\n""" % datetime.fromtimestamp(last_modified).strftime(format)
+
+    def embeds_in_file(self):
+        """Returns a list of all embeds in the note."""
+        matches = re.finditer(r"!\[{2}(.*?)\]{2}", self.content)
+
+        embeds = []
+        for match in matches:
+            embed = Embed(match.group(1))
+            embeds.append(embed)
+
+        return embeds
+
 
     def links_in_file(self):
         """Returns a list of all links in the note."""
@@ -35,7 +59,7 @@ class Note:
             link = Link(match.group(1))
             links.append(link)
 
-        return links
+        return [link for link in links if link not in self.embeds]
 
     def find_backlinks(self, others):
         """Returns a list of Link objects linking to all the notes in 'others' that reference self"""
@@ -55,6 +79,7 @@ class Note:
         converted into Pandoc's Markdown Flavour."""
         self.content = format_code_blocks(self.content)
         self.content = format_links(self.content, self.links)
+        self.content = format_embeds(self.content, self.embeds)
         self.content = format_tags(self.content, self.tags)
         self.content = format_blockrefs(self.content)
         self.content = format_highlights(self.content)
@@ -71,9 +96,9 @@ class Note:
             html = render_markdown(self.content)
 
         # Wrapping converted markdown in a div for styling
-        html = f"<div class=\"content\">{html}</div>"
+        out = f"<div class=\"content\">{html}</div>"
 
-        return html
+        return out, html.metadata
 
     def __eq__(self, other):
         return self.path == other.path

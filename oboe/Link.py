@@ -16,9 +16,9 @@ class Link:
             setattr(self, LINK_SYNTAX[extended_link.group(2)], extended_link.group(3))
         else:
             self.file = obsidian_link
-        
+
         self.slug = slug_case(self.file)
-        
+
     def md_link(self):
         """Returns a link string that follows the Markdown specification"""
         if hasattr(self, "alias"):
@@ -32,6 +32,6 @@ class Link:
             return md_link(self.file, f"{self.slug}#{blockref}")
         else:
             return md_link(self.file, self.slug)
-        
+
     def __eq__(self, other):
-        return self.file == other.file
+        return self.obsidian_link == other.obsidian_link

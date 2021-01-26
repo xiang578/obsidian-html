@@ -17,7 +17,7 @@ def format_blockrefs(document):
 
     for match in matches:
         document = document.replace(match.group(), f"<span id=\"{match.group(1)}\"></span>")
-        
+
     return document
 
 def format_highlights(document):
@@ -27,15 +27,21 @@ def format_highlights(document):
 
     for match in matches:
         document = document.replace(match.group(), f"<mark class=\"highlight\">{match.group(1)}</mark>)")
-        
+
     return document
-    
+
 def format_links(document, links):
     for link in links:
         document = document.replace(f"[[{link.obsidian_link}]]", link.md_link())
-        
+
     return document
-    
+
+def format_embeds(document, embeds):
+    for embed in embeds:
+        document = document.replace(f"![[{embed.obsidian_link}]]", embed.md_embed())
+
+    return document
+
 def format_code_blocks(document):
     regex = re.compile(r"```(.*)$\n([\S\s]*?)\n```", re.MULTILINE)
     matches = regex.finditer(document)
@@ -45,5 +51,5 @@ def format_code_blocks(document):
         lang = match.group(1) if match.group(1) else "plaintext"
         document = document.replace(match.group(),
                     f"<pre><code class=\"{lang} lang-{lang} language-{lang}\">{match.group(2)}</code></pre>")
-        
+
     return document

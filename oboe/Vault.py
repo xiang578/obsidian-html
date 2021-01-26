@@ -1,5 +1,7 @@
 import os
 import regex as re
+import json
+from shutil import copytree
 from oboe.utils import slug_case, md_link, render_markdown, write
 from oboe.Note import Note
 
@@ -39,28 +41,43 @@ class Vault:
         for folder in self.extra_folders:
             if not os.path.exists(os.path.join(out_dir, folder)):
                 os.makedirs(os.path.join(out_dir, folder))
-                
+
+        self._copy_assets(out_dir)
+
         if self.html_template:
             stylesheets = re.findall('<link+.*rel="stylesheet"+.*href="(.+?)"', self.html_template)
             for stylesheet in stylesheets:
                 # Check if template contains reference to a stylesheet
-                stylesheet_abspath = os.path.join(os.path.dirname(self.html_template_path), stylesheet) 
+                stylesheet_abspath = os.path.join(os.path.dirname(self.html_template_path), stylesheet)
                 # Check if the referenced stylesheet is local, and copy it to out_dir if it is
                 if os.path.isfile(stylesheet_abspath):
                     print("Copying local styleshit to the output directory") # TODO: Message system
                     with open(stylesheet_abspath, encoding="utf-8") as f:
                         stylesheet_content = f.read()
                     write(stylesheet_content, os.path.join(out_dir, stylesheet))
-                
+
             # Use the supplied template on all notes
             for note in self.notes:
-                html = self.html_template.format(title=note.title, content=note.html(), backlinks=note.backlink_html)
-                write(html, os.path.join(out_dir, note.filename_html))
+                note_html, note_metadata = note.html()
+                html = self.html_template.format(title=note.title, content=note_html, backlinks=note.backlink_html)
+                print(os.path.join(out_dir, note.extra_dir, note.filename_html))
+                write(html, os.path.join(out_dir, note.extra_dir, note.filename_html))
+                if note_metadata:
+                    print(os.path.join(out_dir, note.extra_dir, note.metadata_filename))
+                    with open(os.path.join(out_dir, note.extra_dir, note.metadata_filename), 'w') as fp:
+                        json.dump(note_metadata, fp)
         else:
             # Do not use a template, just output the content and a list of backlinks
             for note in self.notes:
                 html = "{content}\n{backlinks}".format(content=note.html(), backlinks=note.backlink_html)
                 write(html, os.path.join(out_dir, note.filename_html))
+
+    def _copy_assets(self, out_dir):
+        assets_path = os.path.join(self.vault_root, "Assets")
+        dest_path = os.path.join(out_dir, "Assets")
+        if not os.path.exists(assets_path):
+            return
+        copytree(assets_path, dest_path, dirs_exist_ok=True)
 
 
     def _find_files(self, vault_root, extra_folders):
@@ -80,9 +97,9 @@ class Vault:
             # Check if the element in 'root' has the extension .md and is indeeed a file
             if not (md_file.endswith(".md") and os.path.isfile(os.path.join(root, md_file))):
                 continue
-            
+
             note = Note(os.path.join(root, md_file), is_extra_dir=is_extra_dir)
-            
+
             # Filter tags
             if self.filter:
                 for tag in self.filter:

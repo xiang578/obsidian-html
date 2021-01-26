@@ -16,6 +16,17 @@ def slug_case(text):
 def md_link(text, link):
     return "[" + text + "](notes/" + link + (".html" if GLOBAL.HTML_LINK_EXTENSIONS else "") + ")"
 
+def embed_image(link, resize):
+    if resize:
+        if "x" in resize:
+            width, height = resize.split("x")
+            if width and height:
+                return """<img src="%s" width="%s" height="%s" />""" % (link, width, height)
+            elif width:
+                return """<img src="%s" width="%s" />""" % (link, width)
+        return """<img src="%s" width="%s" />""" % (link, resize)
+    return """<img src="%s" />""" % (link)
+
 
 def extract_links_from_file(document):
     matches = re.finditer(r"\[{2}([^\]]*?)[|#\]]([^\]]*?)\]+", document)
@@ -54,8 +65,7 @@ def write(text, file):
         f.write(text)
 
 
-def render_markdown(text):
-    # Escaped curly braces lose their escapes when formatted. I'm suspecting
+def render_markdown(text): # Escaped curly braces lose their escapes when formatted. I'm suspecting
     # this is from markdown2, as I haven't found anyplace which could
     # do this among my own formatter functions. Therefore I double escape them.
     text = text.replace(r"\{", r"\\{").replace(r"\}", r"\\}")
@@ -78,7 +88,9 @@ def render_markdown(text):
         # Support for Obsidian's footnote syntax
         "footnotes",
         # Enable task list checkboxes - [ ]
-        "task_list"
+        "task_list",
+        # Enable front-matter
+        "metadata"
     ]
 
     return markdown2.markdown(text, extras=markdown2_extras)
