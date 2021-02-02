@@ -28,7 +28,7 @@ class Embed:
             if any([(".%s" % ext) in obsidian_link for ext in exts]):
                 setattr(self, "file_type", ft)
                 break
-        self.link = "notes/Assets/%s" % self.file
+        self.link = "notes/assets/%s" % self.file
 
     def md_embed(self):
         """Returns a link string that follows the Markdown specification"""

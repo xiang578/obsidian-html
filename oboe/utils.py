@@ -14,7 +14,7 @@ def slug_case(text):
 
 
 def md_link(text, link):
-    return "[" + text + "](notes/" + link + (".html" if GLOBAL.HTML_LINK_EXTENSIONS else "") + ")"
+    return "[" + text + "](" + link + (".html" if GLOBAL.HTML_LINK_EXTENSIONS else "") + ")"
 
 def embed_image(link, resize):
     if resize:

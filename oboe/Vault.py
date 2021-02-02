@@ -10,6 +10,7 @@ class Vault:
     def __init__(self, vault_root, extra_folders=[], html_template=None, filter=[]):
         self.vault_root = vault_root
         self.filter = filter
+        self.extra_dir_index_content_map = {}
         self.notes = self._find_files(vault_root, extra_folders)
         self.extra_folders = extra_folders
         self._add_backlinks()
@@ -60,21 +61,22 @@ class Vault:
             for note in self.notes:
                 note_html, note_metadata = note.html()
                 html = self.html_template.format(title=note.title, content=note_html, backlinks=note.backlink_html)
-                print(os.path.join(out_dir, note.extra_dir, note.filename_html))
                 write(html, os.path.join(out_dir, note.extra_dir, note.filename_html))
-                if note_metadata:
-                    print(os.path.join(out_dir, note.extra_dir, note.metadata_filename))
-                    with open(os.path.join(out_dir, note.extra_dir, note.metadata_filename), 'w') as fp:
-                        json.dump(note_metadata, fp)
+                with open(os.path.join(out_dir, note.extra_dir, note.metadata_filename), 'w') as fp:
+                    json.dump(note_metadata, fp)
         else:
             # Do not use a template, just output the content and a list of backlinks
             for note in self.notes:
                 html = "{content}\n{backlinks}".format(content=note.html(), backlinks=note.backlink_html)
                 write(html, os.path.join(out_dir, note.filename_html))
+        if self.extra_dir_index_content_map:
+            for sub_dir, content in self.extra_dir_index_content_map.items():
+                write(content, os.path.join(out_dir, sub_dir, "index.html"))
+
 
     def _copy_assets(self, out_dir):
-        assets_path = os.path.join(self.vault_root, "Assets")
-        dest_path = os.path.join(out_dir, "Assets")
+        assets_path = os.path.join(self.vault_root, "assets")
+        dest_path = os.path.join(out_dir, "assets")
         if not os.path.exists(assets_path):
             return
         copytree(assets_path, dest_path, dirs_exist_ok=True)
@@ -86,10 +88,17 @@ class Vault:
 
         # Find all markdown-files in each extra folder.
         for folder in extra_folders:
-            md_files += self._find_md_files(os.path.join(vault_root, folder), is_extra_dir=True)
+            sub_dir_md_files = self._find_md_files(os.path.join(vault_root, folder), is_extra_dir=True)
+            md_files += sub_dir_md_files
+            self._gen_index(sub_dir_md_files)
 
         return md_files
 
+    def _gen_index(self, notes):
+        notes.sort(key = lambda n: os.stat(n.path).st_ctime)
+        note_list = ["""<li><a href="%s">%s</a></li>""" % (note.filename_html, note.title) for note in notes]
+        container_str = """<div id="index"><ul>%s</ul></div>""" % "".join(note_list)
+        self.extra_dir_index_content_map[notes[0].extra_dir] = container_str
 
     def _find_md_files(self, root, is_extra_dir=False):
         md_files = []
