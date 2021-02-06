@@ -95,7 +95,7 @@ class Vault:
         return md_files
 
     def _gen_index(self, notes):
-        notes.sort(key = lambda n: os.stat(n.path).st_ctime)
+        notes.sort(key = lambda n: os.stat(n.path).st_birthtime)
         note_list = ["""<li><a href="%s">%s</a></li>""" % (note.filename_html, note.title) for note in notes]
         container_str = """<div id="index"><ul>%s</ul></div>""" % "".join(note_list)
         self.extra_dir_index_content_map[notes[0].extra_dir] = container_str
