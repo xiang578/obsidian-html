@@ -66,7 +66,7 @@ class Note:
         backlinks = []
         for other in others:
             if self == other: continue
-            if self.link in other.links:
+            if self.link.file in [link.file for link in other.links]:
                 backlinks.append(other.link)
 
         backlinks = sorted(backlinks, key=lambda link: link.file)
