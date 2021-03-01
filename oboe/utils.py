@@ -89,8 +89,6 @@ def render_markdown(text): # Escaped curly braces lose their escapes when format
         "footnotes",
         # Enable task list checkboxes - [ ]
         "task_list",
-        # Enable front-matter
-        "metadata"
     ]
 
     return markdown2.markdown(text, extras=markdown2_extras)
